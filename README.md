@@ -14,6 +14,15 @@ Podstawowa architektura wdrażanego rozwiązania opiera się na poniższych serw
 
 Dodatkowo, dzięki prostemu interfejsowi graficznemu, aplikacja pozwala na wygodne porównanie i empiryczne przetestowanie "surowego" modelu Bielik polegającego tylko na sobie w konfrontacji z bogatszym strumieniem odpowiedzi nowocześniejszego RAG wspomaganego dedykowanym własnym kontekstem.
 
+## Zmiany względem wersji warsztatowej
+
+Repozytorium zostało zaktualizowane po warsztatach tak, aby używać mocniejszego modelu `SpeakLeash/bielik-11b-v3.0-instruct:Q8_0` zamiast mniejszego wariantu Bielik 4.5B używanego w pierwotnej wersji warsztatowej.
+
+W praktycznych testach model 11B okazał się wyraźnie klasę wyżej od 4.5B: odpowiedzi są stabilniejsze, lepiej trzymają się kontekstu i znacznie rzadziej halucynują. Różnica jest szczególnie widoczna w trybie RAG, gdzie większy model lepiej wykorzystuje fragmenty pobrane z BigQuery Vector Search zamiast dopowiadać brakujące informacje z własnych domysłów.
+
+Wraz ze zmianą modelu dostosowano konfigurację uruchomieniową Cloud Run: usługa LLM używa jednej karty `nvidia-l4`, 32 GiB pamięci kontenera, pojedynczej równoległej odpowiedzi (`OLLAMA_NUM_PARALLEL=1`) oraz jednego załadowanego modelu. Dzięki temu konfiguracja lepiej odpowiada realnym wymaganiom modelu 11B w wariancie Q8.
+
+Dodano również skrypt `run_all.sh`, który uruchamia pełny proces wdrożenia: konfigurację środowiska, wdrożenie modeli, inicjalizację BigQuery, wdrożenie API oraz załadowanie przykładowych danych.
 
 ## Z czego składa się kod?
 
@@ -274,4 +283,3 @@ Aby otworzyć interfejs graficzny testowej aplikacji z poziomu Twojego projektu:
    ```
 2. Po otwarciu opublikowanej strony w Twojej przeglądarce internetowej, wpisz w okno dialogowe dowolne zapytanie (np. "Do której godziny jest otwarty basen?") i kliknij "Zapytaj".
 3. Porównaj strumień odpowiedzi wyświetlany dla samej bazy wiedzy modelu (bez dodatkowego kontekstu) z bogatszą odpowiedzią RAG wygenerowaną w oparciu o wiedzę z przeszukiwania BigQuery Vector Search.
-
