@@ -98,6 +98,22 @@ Przykładowy kod źródłowy zawarty w tym repozytorium pozwala w szczególnośc
     --role='roles/run.invoker'
    ```  
 
+### Alternatywa: uruchomienie całego wdrożenia jednym skryptem
+
+Jeżeli chcesz przejść przez wszystkie kroki wdrożeniowe za jednym razem, możesz użyć skryptu z głównego katalogu repozytorium:
+
+```bash
+./run_all.sh
+```
+
+Skrypt wczytuje `setup_env.sh`, włącza wymagane API Google Cloud, nadaje bieżącemu użytkownikowi uprawnienie `roles/run.invoker`, wdraża usługi `bielik`, `embedding-gemma` i `orchestration-api`, inicjalizuje BigQuery oraz ładuje przykładowy plik `vector_store/hotel_rules.csv`.
+
+Jeżeli część infrastruktury jest już przygotowana, możesz pominąć wybrane kroki:
+
+```bash
+./run_all.sh --skip-apis --skip-iam --skip-ingest
+```
+
 ## 3. Uruchomienie modelu LLM Bielik na Cloud Run
 
 1. Przeanalizuj skrypt `llm/cloud_run.sh`
@@ -258,5 +274,4 @@ Aby otworzyć interfejs graficzny testowej aplikacji z poziomu Twojego projektu:
    ```
 2. Po otwarciu opublikowanej strony w Twojej przeglądarce internetowej, wpisz w okno dialogowe dowolne zapytanie (np. "Do której godziny jest otwarty basen?") i kliknij "Zapytaj".
 3. Porównaj strumień odpowiedzi wyświetlany dla samej bazy wiedzy modelu (bez dodatkowego kontekstu) z bogatszą odpowiedzią RAG wygenerowaną w oparciu o wiedzę z przeszukiwania BigQuery Vector Search.
-
 
