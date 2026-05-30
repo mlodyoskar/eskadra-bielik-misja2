@@ -7,7 +7,7 @@ Suwerenne i wiarygodne AI - Od dokumentów firmowych do inteligentnej bazy wiedz
 Niniejsze repozytorium prezentuje kompletne, bezserwerowe (serverless) rozwiązanie klasy RAG (Retrieval-Augmented Generation) wdrożone w chmurze Google Cloud. Głównym celem aplikacji jest dostarczenie wydajnego i suwerennego inteligentnego asystenta zdolnego do odpowiadania na pytania użytkownika w oparciu o dedykowaną bazę wiedzy (np. wewnętrzne dokumenty, regulaminy).
 
 Podstawowa architektura wdrażanego rozwiązania opiera się na poniższych serwisach i komponentach:
-- **Modelu językowym LLM:** Suwerenny polski model [Bielik](https://ollama.com/SpeakLeash/bielik-4.5b-v3.0-instruct) charakteryzujący się bardzo dobrym zrozumieniem języka polskiego oraz polskiego kontekstu kulturowego. Uruchomiony w usłudze Cloud Run, odpowiada za ostateczne generowanie naturalnej dla użytkownika odpowiedzi.
+- **Modelu językowym LLM:** Suwerenny polski model [Bielik 11B v3.0 Instruct](https://ollama.com/SpeakLeash/bielik-11b-v3.0-instruct) w wariancie `Q8_0`, charakteryzujący się bardzo dobrym zrozumieniem języka polskiego oraz polskiego kontekstu kulturowego. Uruchomiony w usłudze Cloud Run, odpowiada za ostateczne generowanie naturalnej dla użytkownika odpowiedzi.
 - **Modelu osadzania (Embedding):** Wydajny model [EmbeddingGemma](https://deepmind.google/models/gemma/embeddinggemma/) uruchomiony w usłudze Cloud Run, służący do szybkiej zamiany tekstu (zapytań użytkownika i dokumentów docelowych) na reprezentację wektorową.
 - **Wektorowej Bazie Wiedzy:** Skalowalna hurtownia danych [BigQuery](https://cloud.google.com/bigquery?hl=en) z mechanizmem Vector Search zapewniająca wektorowe wyszukiwanie semantycznie dopasowanych fragmentów z pośród milionów dokumentów źródłowych.
 - **Logice i serwerze aplikacyjnym:** Aplikacja napisana w języku Python (z frameworkiem FastAPI), udostępniająca nakładkę graficzną Web UI oraz publiczne API spinające platformy w całość.
@@ -19,7 +19,7 @@ Dodatkowo, dzięki prostemu interfejsowi graficznemu, aplikacja pozwala na wygod
 
 Przykładowy kod źródłowy zawarty w tym repozytorium pozwala w szczególności na:
 
-* Skonfigurowanie własnej instancji modelu [Bielik](https://ollama.com/SpeakLeash/bielik-4.5b-v3.0-instruct) w oparciu o silnik [Ollama](https://ollama.com/)
+* Skonfigurowanie własnej instancji modelu [Bielik 11B v3.0 Instruct](https://ollama.com/SpeakLeash/bielik-11b-v3.0-instruct) w oparciu o silnik [Ollama](https://ollama.com/)
 
 * Skonfigurowanie własnej instancji modelu osadzającego (embedding model) [EmbeddingGemma](https://deepmind.google/models/gemma/embeddinggemma/) w oparciu o [Ollama](https://ollama.com/)
 
@@ -82,7 +82,7 @@ Przykładowy kod źródłowy zawarty w tym repozytorium pozwala w szczególnośc
    source setup_env.sh
    ```
 >[!IMPORTANT]
->Jeżeli z jakiegoś powodu musisz ponownie uruchomić terminal Cloud Shell, pamiętaj aby ponownie uruchomić skrypt `setup_env.sh` aby wczytać zmienne środowiskowe.
+>Jeżeli z jakiegoś powodu musisz ponownie uruchomić terminal Cloud Shell, pamiętaj aby ponownie uruchomić skrypt `setup_env.sh` aby wczytać zmienne środowiskowe. Skrypt ustawia również `LLM_MODEL=SpeakLeash/bielik-11b-v3.0-instruct:Q8_0`, którego używają testy i usługa orchestration.
 
 4. Włącz potrzebne usługi w projekcie Google Cloud
    ```bash
@@ -101,6 +101,8 @@ Przykładowy kod źródłowy zawarty w tym repozytorium pozwala w szczególnośc
 ## 3. Uruchomienie modelu LLM Bielik na Cloud Run
 
 1. Przeanalizuj skrypt `llm/cloud_run.sh`
+
+   Skrypt wdraża model `SpeakLeash/bielik-11b-v3.0-instruct:Q8_0` na Cloud Run z jedną kartą `nvidia-l4`, 32 GiB pamięci kontenera oraz `OLLAMA_NUM_PARALLEL=1`. Ten wariant Bielika ma około 12 GB wag w GGUF Q8, więc pojedynczy L4 z 24 GB VRAM jest praktycznym minimum dla stabilnego uruchomienia bez równoległego dopychania kilku zapytań do tego samego modelu.
 
 2. Uruchom skrypt `llm/cloud_run.sh`
    ```bash
@@ -256,6 +258,5 @@ Aby otworzyć interfejs graficzny testowej aplikacji z poziomu Twojego projektu:
    ```
 2. Po otwarciu opublikowanej strony w Twojej przeglądarce internetowej, wpisz w okno dialogowe dowolne zapytanie (np. "Do której godziny jest otwarty basen?") i kliknij "Zapytaj".
 3. Porównaj strumień odpowiedzi wyświetlany dla samej bazy wiedzy modelu (bez dodatkowego kontekstu) z bogatszą odpowiedzią RAG wygenerowaną w oparciu o wiedzę z przeszukiwania BigQuery Vector Search.
-
 
 

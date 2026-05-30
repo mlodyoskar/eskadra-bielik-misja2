@@ -26,6 +26,7 @@ TABLE_ID = os.environ.get("BIGQUERY_TABLE", "hotel_rules")
 REGION = os.environ.get("REGION", "europe-west1")
 EMBEDDING_URL = os.environ.get("EMBEDDING_URL")
 LLM_URL = os.environ.get("LLM_URL")
+LLM_MODEL = os.environ.get("LLM_MODEL", "SpeakLeash/bielik-11b-v3.0-instruct:Q8_0")
 
 bq_client = bigquery.Client(project=PROJECT_ID) if PROJECT_ID else None
 
@@ -151,7 +152,7 @@ async def ask_question(request_data: AskRequest):
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "SpeakLeash/bielik-4.5b-v3.0-instruct:Q8_0",
+        "model": LLM_MODEL,
         "messages": [{"role": "user", "content": prompt}],
         "stream": False
     }
@@ -185,7 +186,7 @@ async def ask_direct(request_data: AskRequest):
     prompt = f"Odpowiedz na poniższe pytanie w sposób jasny i zwięzły:\\n\\nPYTANIE:\\n{query}"
     
     payload = {
-        "model": "SpeakLeash/bielik-4.5b-v3.0-instruct:Q8_0",
+        "model": LLM_MODEL,
         "messages": [{"role": "user", "content": prompt}],
         "stream": False
     }

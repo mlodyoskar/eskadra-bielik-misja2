@@ -13,7 +13,7 @@ ENV OLLAMA_DEBUG=false
 ENV OLLAMA_KEEP_ALIVE=-1
 
 # Store the model weights in the container image
-ENV MODEL=SpeakLeash/bielik-4.5b-v3.0-instruct:Q8_0
+ENV MODEL=SpeakLeash/bielik-11b-v3.0-instruct:Q8_0
 RUN ollama serve & sleep 5 && ollama pull $MODEL
 
 # Start Ollama
